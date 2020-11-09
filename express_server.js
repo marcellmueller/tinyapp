@@ -1,13 +1,27 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
+const generateRandomString = require('./generateRandomString');
+app.use(bodyParser.urlencoded({ extended: true }));
 const PORT = 8080;
 
 app.set('view engine', 'ejs');
 
+//database object, we will convert to true database later
 const urlDatabase = {
   b2xVn2: 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.com',
 };
+
+//handle POST request for our new URL form
+app.post('/urls', (req, res) => {
+  console.log(req.body);
+  res.send('Ok');
+});
+//GET route to render urls_new.ejs template
+app.get('/urls/new', (req, res) => {
+  res.render('urls_new');
+});
 
 app.get('/', (req, res) => {
   res.send('Hello');
