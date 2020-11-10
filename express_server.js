@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const generateRandomString = require('./generateRandomString');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -41,6 +42,14 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
+//login POST route
+app.post('/login/', (req, res) => {
+  const username = req.body.username[1];
+  res.cookie(username, urlDatabase);
+  console.log(username);
+  res.redirect('/urls');
+});
+
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
@@ -58,6 +67,8 @@ app.get('/u/:shortURL', (req, res) => {
 
 //redirect to index if user goes to base directory
 app.get('/', (req, res) => {
+  console.log('Cookies: ', req.cookies);
+
   res.redirect('/urls');
 });
 
@@ -80,6 +91,11 @@ app.get('/urls/:shortURL', (req, res) => {
   } else {
     res.render('not_found');
   }
+});
+
+//404 error handler
+app.use(function (req, res) {
+  res.render('not_found', { url: req.url });
 });
 
 app.listen(PORT, () => {
