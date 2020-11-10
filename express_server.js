@@ -56,6 +56,7 @@ app.get('/u/:shortURL', (req, res) => {
   }
 });
 
+//redirect to index if user goes to base directory
 app.get('/', (req, res) => {
   res.redirect('/urls');
 });
