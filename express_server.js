@@ -27,6 +27,14 @@ app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
 
+app.get('/u/:shortURL', (req, res) => {
+  if (urlDatabase[req.params.shortURL]) {
+    const longURL = urlDatabase[req.params.shortURL];
+    res.redirect(longURL);
+  } else {
+    res.render('not_found');
+  }
+});
 app.get('/', (req, res) => {
   res.send('Hello');
 });
