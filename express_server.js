@@ -15,8 +15,7 @@ const urlDatabase = {
 
 //handle POST request for our new URL form
 app.post('/urls', (req, res) => {
-  console.log(req.body);
-  res.send('Ok');
+  res.send(generateRandomString(res));
 });
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
