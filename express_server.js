@@ -23,18 +23,30 @@ app.post('/urls', (req, res) => {
   res.redirect(`urls/${shortURL}`);
 });
 
-app.post('/urls/:shortURL/delete', (req, res) => {
-  let URL = req.params.shortURL;
-  delete urlDatabase[URL];
-  // res.render(`/urls`);
-  res.status(201);
+//edit URL post route
+app.post('/urls/:id', (req, res) => {
+  let URL = req.params.id;
+  urlDatabase[URL] = req.body.longURL;
+  console.log(urlDatabase);
   res.redirect('/urls');
 });
+
+//delete button POST route
+app.post('/urls/:shortURL/delete', (req, res) => {
+  let URL = req.params.shortURL;
+  console.log(URL);
+  delete urlDatabase[URL];
+  console.log(urlDatabase);
+  // res.render(`/urls`);
+  res.redirect('/urls');
+});
+
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
 
+//short /u/shortURL route handler
 app.get('/u/:shortURL', (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL];
@@ -43,8 +55,9 @@ app.get('/u/:shortURL', (req, res) => {
     res.render('not_found');
   }
 });
+
 app.get('/', (req, res) => {
-  res.send('Hello');
+  res.redirect('/urls');
 });
 
 app.get('/urls.json', (req, res) => {
@@ -61,7 +74,11 @@ app.get('/urls/:shortURL', (req, res) => {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
   };
-  res.render('urls_show', templateVars);
+  if (urlDatabase[req.params.shortURL]) {
+    res.render('urls_show', templateVars);
+  } else {
+    res.render('not_found');
+  }
 });
 
 app.listen(PORT, () => {
