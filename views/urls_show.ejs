@@ -20,10 +20,10 @@
         <p class="card-text">
           Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
         </p>
-        <label for="longURL">Update URL:</label>
+        <label for="longURL"><h5>Update URL:</h5></label>
         <form method="POST" action="/urls/<%= shortURL %>">
           <input
-            class="form-control"
+            class="text-center"
             type="url"
             required
             name="longURL"

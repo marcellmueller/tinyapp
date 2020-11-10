@@ -43,6 +43,12 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
+app.post('/urls/:shortURL/edit', (req, res) => {
+  let URL = req.params.shortURL;
+
+  res.redirect(`/urls/${URL}`);
+});
+
 //login POST route
 app.post('/login/', (req, res) => {
   const username = req.body.username;

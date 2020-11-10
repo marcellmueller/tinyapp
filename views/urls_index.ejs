@@ -37,13 +37,13 @@
             <td><a href="urls/<%= url %>"><%= url %></a></td>
             <td><a href="<%= urls[url] %>"><%= urls[url] %></a></td>
             <td>
-              <button class="btn btn-primary">
-                <a href="/urls/<%= url %>">Edit</a>
-              </button>
+              <form method="POST" action="urls/<%= url %>/edit">
+                <button class="btn btn-primary">Edit</button>
+              </form>
             </td>
 
             <td>
-              <form method="POST" action="/urls/<%= url %>/delete">
+              <form method="POST" action="urls/<%= url %>/delete">
                 <button class="btn btn-primary">Delete</button>
               </form>
             </td>
