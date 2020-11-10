@@ -18,8 +18,18 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+
+    <% if(username !== undefined){ %>
+      <h5>Logged in as: <%- username %></h5>
+      <form method="POST" action="/logout">
+        <button type="submit" class="align-middle btn btn-primary float-right">Logout</button>
+        </button>
+        
+      </form>  
+    <% } else{ %>  
+      
     <form method="POST" action="/login/">
-      <button name="username" type="submit" class="align-middle btn btn-primary float-right">Submit</button>
+      <button type="submit" class="align-middle btn btn-primary float-right">Submit</button>
       </button>
       <input
         class="float-right align-middle"
@@ -28,6 +38,9 @@
         name="username"
         style="width: 300px; margin: 1em"
       />
-    </form>
+    </form>  
+   <% } %>
+   
+
   </nav>
 </header>
