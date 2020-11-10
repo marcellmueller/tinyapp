@@ -15,7 +15,12 @@ const urlDatabase = {
 
 //handle POST request for our new URL form
 app.post('/urls', (req, res) => {
-  res.send(generateRandomString(res));
+  const shortURL = generateRandomString(res);
+  //save to database
+  urlDatabase[shortURL] = req.body.longURL;
+  console.log(urlDatabase);
+  //redirect to our shortURL page
+  res.redirect(`urls/${shortURL}`);
 });
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
@@ -28,10 +33,6 @@ app.get('/', (req, res) => {
 
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
-});
-
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
 app.get('/urls', (req, res) => {
