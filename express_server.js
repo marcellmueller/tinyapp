@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const checkEmail = require('./checkEmail');
 const app = express();
 const generateRandomString = require('./generateRandomString');
 app.use(cookieParser());
@@ -41,14 +42,12 @@ app.post('/urls', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   let URL = req.params.id;
   urlDatabase[URL] = req.body.longURL;
-  console.log(urlDatabase);
   res.redirect('/urls');
 });
 
 //delete button POST route
 app.post('/urls/:shortURL/delete', (req, res) => {
   let URL = req.params.shortURL;
-  console.log(URL);
   delete urlDatabase[URL];
   // res.render(`/urls`);
   res.redirect('/urls');
@@ -61,8 +60,12 @@ app.post('/urls/:shortURL/edit', (req, res) => {
 
 //login POST route
 app.post('/login/', (req, res) => {
-  const username = req.body.username;
-  res.cookie('username', users[username]);
+  const username = req.body.email;
+  const password = req.body.password;
+  if (checkEmail(users, username) === false) {
+    console.log('email does not exist');
+  }
+  // if (checkEmail(users, username)) res.cookie('username', users[username]);
 
   res.redirect('/urls');
 });
@@ -74,25 +77,37 @@ app.post('/logout/', (req, res) => {
 });
 
 //POST route to render urls_register.ejs template
-app.post('/registerPage/', (req, res) => {
+app.get('/register/', (req, res) => {
   const templateVars = {
     username: users[req.cookies['user_id']],
   };
   res.render('urls_register', templateVars);
 });
 
+//POST route to render urls_login.ejs template
+app.get('/login/', (req, res) => {
+  const templateVars = {
+    username: users[req.cookies['user_id']],
+  };
+  res.render('urls_login', templateVars);
+});
 //POST route to render urls_register.ejs template
 app.post('/register/', (req, res) => {
-  const userID = generateRandomString();
-  users[userID] = {
-    id: userID,
-    email: req.body.email,
-    password: req.body.password,
-  };
-  console.log(users);
-  const templateVars = { urls: urlDatabase, username: users[userID] };
-  res.cookie('user_id', userID);
-  res.render('urls_index', templateVars);
+  if (checkEmail(users, req.body['email']) === false) {
+    const userID = generateRandomString();
+    users[userID] = {
+      id: userID,
+      email: req.body.email,
+      password: req.body.password,
+    };
+
+    const templateVars = { urls: urlDatabase, username: users[userID] };
+    res.cookie('user_id', userID);
+    res.render('urls_index', templateVars);
+  } else {
+    console.log('404 erroeewrwjkrhak');
+    res.status(404);
+  }
 });
 
 //GET route to render urls_new.ejs template
@@ -116,8 +131,6 @@ app.get('/u/:shortURL', (req, res) => {
 
 //redirect to index if user goes to base directory
 app.get('/', (req, res) => {
-  console.log('Cookies: ', req.cookies);
-
   res.redirect('/urls');
 });
 
@@ -147,10 +160,10 @@ app.get('/urls/:shortURL', (req, res) => {
 });
 
 //404 error handler
-app.use(function (req, res) {
-  res.render('not_found', { url: req.url });
-});
 
+app.use(function (req, res, next) {
+  res.status(404).render('not_found');
+});
 app.listen(PORT, () => {
   console.log(`TinyURL listening on port ${PORT}!`);
 });
