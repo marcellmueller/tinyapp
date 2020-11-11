@@ -18,14 +18,15 @@ const getUserId = (users, email) => {
   return false;
 };
 
-const checkPassword = (users, password) => {
-  for (const each in users) {
-    if (users[each].password === password) {
-      return true;
-    }
-  }
-  return false;
-};
+//depreciated since storing passwords in plain text is bad
+// const checkPassword = (users, password) => {
+//   for (const each in users) {
+//     if (users[each].password === password) {
+//       return true;
+//     }
+//   }
+//   return false;
+// };
 
 const urlDatabase = {
   b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'CgFjj4' },
@@ -45,4 +46,4 @@ const urlsForUser = (urlDatabase, userId) => {
 };
 
 console.log(urlsForUser(urlDatabase, 'CgFjj4'));
-module.exports = { getUserId, checkEmail, checkPassword, urlsForUser };
+module.exports = { getUserId, checkEmail, urlsForUser };

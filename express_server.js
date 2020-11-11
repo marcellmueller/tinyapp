@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const login = require('./login');
 const checkEmail = login.checkEmail;
 const getUserId = login.getUserId;
-const checkPassword = login.checkPassword;
 const urlsForUser = login.urlsForUser;
 const app = express();
 const generateRandomString = require('./generateRandomString');
@@ -23,20 +23,10 @@ const urlDatabase = {
 };
 
 const users = {
-  userRandomID: {
-    id: 'userRandomID',
-    email: 'user@example.com',
-    password: 'purple-monkey-dinosaur',
-  },
-  user2RandomID: {
-    id: 'user2RandomID',
-    email: 'user2@example.com',
-    password: 'dishwasher-funk',
-  },
-  CgFjj4: {
-    id: 'CgFjj4',
+  Mn9pYP: {
+    id: 'Mn9pYP',
     email: 'mail.marcelm@gmail.com',
-    password: 'afasfasfa',
+    password: '$2b$10$oxvhaSpge0vpDIrEwuO7YuTA1mhb15kPmt5GA1y7jx4VEaZafKQoe',
   },
 };
 
@@ -86,7 +76,10 @@ app.post('/login/', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const userId = getUserId(users, email);
-  if (checkEmail(users, email) === true && checkPassword(users, password)) {
+  const hashedPassword = users[userId].password;
+  const bcryptCheck = bcrypt.compareSync(password, hashedPassword);
+  console.log(bcryptCheck);
+  if (checkEmail(users, email) === true && bcryptCheck === true) {
     res.cookie('user_id', userId);
     return res.redirect('/urls');
   } else {
@@ -109,13 +102,14 @@ app.post('/register/', (req, res) => {
     req.body.password.length > 3
   ) {
     const userID = generateRandomString();
-
+    const password = req.body.password;
+    const hashedPassword = bcrypt.hashSync(password, 10);
     users[userID] = {
       id: userID,
       email: req.body.email,
-      password: req.body.password,
+      password: hashedPassword,
     };
-
+    console.log(users);
     const templateVars = {
       urls: urlsForUser(urlDatabase, userID),
       userId: users[userID],
