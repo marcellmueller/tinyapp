@@ -42,9 +42,12 @@ const users = {
 //handle POST request for our new URL form
 app.post('/urls', (req, res) => {
   const shortURL = generateRandomString(res);
+  const longURL = req.body.longURL;
+  const userId = req.cookies['user_id'];
   //save to database
-  urlDatabase[shortURL] = req.body.longURL;
-  //redirect to our shortURL page
+  urlDatabase[shortURL] = { longURL: longURL, userID: userId };
+
+  console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
 });
 
