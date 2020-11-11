@@ -1,7 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const checkEmail = require('./checkEmail');
+const login = require('./login');
+const checkEmail = login.checkEmail;
+const getUserId = login.getUserId;
+const checkPassword = login.checkPassword;
 const app = express();
 const generateRandomString = require('./generateRandomString');
 app.use(cookieParser());
@@ -26,6 +29,11 @@ const users = {
     id: 'user2RandomID',
     email: 'user2@example.com',
     password: 'dishwasher-funk',
+  },
+  CgFjj4: {
+    id: 'CgFjj4',
+    email: 'mail.marcelm@gmail.com',
+    password: 'afasfasfa',
   },
 };
 
@@ -60,10 +68,11 @@ app.post('/urls/:shortURL/edit', (req, res) => {
 
 //login POST route
 app.post('/login/', (req, res) => {
-  const username = req.body.email;
+  const email = req.body.email;
   const password = req.body.password;
-  if (checkEmail(users, username) === false) {
-    console.log('email does not exist');
+  console.log(getUserId(users, email));
+  if (checkEmail(users, email) === true && checkPassword(users, password)) {
+    console.log('login successful!');
   }
   // if (checkEmail(users, username)) res.cookie('username', users[username]);
 
@@ -95,6 +104,7 @@ app.get('/login/', (req, res) => {
 app.post('/register/', (req, res) => {
   if (checkEmail(users, req.body['email']) === false) {
     const userID = generateRandomString();
+
     users[userID] = {
       id: userID,
       email: req.body.email,
