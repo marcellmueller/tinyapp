@@ -88,7 +88,7 @@ app.post('/register/', (req, res) => {
   users[userID] = { email: req.body.email, password: req.body.password };
   console.log(users);
   // const templateVars = { urls: urlDatabase, username: userID };
-  res.cookie('userID', userID);
+  res.cookie('user_id', userID);
   // res.render('urls_index', templateVars);
   res.redirect('/urls');
 });
