@@ -33,7 +33,6 @@ app.post('/urls', (req, res) => {
   const shortURL = generateRandomString(res);
   //save to database
   urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase);
   //redirect to our shortURL page
   res.redirect(`urls/${shortURL}`);
 });
@@ -51,7 +50,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   let URL = req.params.shortURL;
   console.log(URL);
   delete urlDatabase[URL];
-  console.log(urlDatabase);
   // res.render(`/urls`);
   res.redirect('/urls');
 });
@@ -73,7 +71,6 @@ app.post('/login/', (req, res) => {
 //logout POST route
 app.post('/logout/', (req, res) => {
   res.clearCookie('username');
-
   res.redirect('/urls');
 });
 
@@ -90,8 +87,10 @@ app.post('/register/', (req, res) => {
   const userID = generateRandomString();
   users[userID] = { email: req.body.email, password: req.body.password };
   console.log(users);
-  const templateVars = { urls: urlDatabase, username: userID };
-  res.render('urls_index', templateVars);
+  // const templateVars = { urls: urlDatabase, username: userID };
+  res.cookie('userID', userID);
+  // res.render('urls_index', templateVars);
+  res.redirect('/urls');
 });
 
 //GET route to render urls_new.ejs template

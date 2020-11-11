@@ -27,24 +27,26 @@
         
       </form>  
     <% } else{ %>  
-      <form method="POST" action="/login" >
-        <button type="submit" class=" align-middle btn btn-primary">Login</button>
+      <div class="container">
+      <form method="POST" class="row" action="/login" >
+        <button type="submit" class="align-middle btn btn-primary">Login</button>
        
       </button>
        
        <input
-        class="w-50 float-right"
+        class="row w-50"
         type="text"
         required
         name="username"
         style="width: 300px; margin: 1em"
       />
-      </form>  
+      </form class="row">  
          <form method="POST" action="/registerPage/">
-         <button type="submit" class=" align-middle btn btn-primary">Register</button>
+         <button type="submit" class=" btn btn-primary">Register</button>
          </button>
   
         </form>  
+      </div>
    <% } %>
    
 
