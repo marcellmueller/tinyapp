@@ -27,4 +27,22 @@ const checkPassword = (users, password) => {
   return false;
 };
 
-module.exports = { getUserId, checkEmail, checkPassword };
+const urlDatabase = {
+  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'CgFjj4' },
+  i3BoGr: { longURL: 'https://www.google.ca', userID: 'CgFjj4' },
+  b6UTxC: { longURL: 'https://www.tsn.ca', userID: 'user2RandomID' },
+  i3BoG9: { longURL: 'https://www.google.ca', userID: 'userRandomID' },
+};
+
+const urlsForUser = (urlDatabase, userId) => {
+  const userURLs = {};
+  for (const each in urlDatabase) {
+    if (urlDatabase[each].userID === userId) {
+      userURLs[each] = urlDatabase[each];
+    }
+  }
+  return userURLs;
+};
+
+console.log(urlsForUser(urlDatabase, 'CgFjj4'));
+module.exports = { getUserId, checkEmail, checkPassword, urlsForUser };

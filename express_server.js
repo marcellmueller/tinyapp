@@ -5,6 +5,7 @@ const login = require('./login');
 const checkEmail = login.checkEmail;
 const getUserId = login.getUserId;
 const checkPassword = login.checkPassword;
+const urlsForUser = login.urlsForUser;
 const app = express();
 const generateRandomString = require('./generateRandomString');
 app.use(cookieParser());
@@ -54,16 +55,25 @@ app.post('/urls', (req, res) => {
 //edit URL post route
 app.post('/urls/:id', (req, res) => {
   let URL = req.params.id;
-  urlDatabase[URL] = req.body.longURL;
-  res.redirect('/urls');
+  const user = urlDatabase[URL].userID;
+  if (user === req.cookies['user_id']) {
+    urlDatabase[URL].longURL = req.body.longURL;
+    return res.redirect('/urls');
+  } else {
+    return res.status(404).send(`You don't have permission to edit this URL`);
+  }
 });
 
 //delete button POST route
 app.post('/urls/:shortURL/delete', (req, res) => {
   let URL = req.params.shortURL;
-  delete urlDatabase[URL];
-  // res.render(`/urls`);
-  res.redirect('/urls');
+  const user = urlDatabase[URL].userID;
+  if (user === req.cookies['user_id']) {
+    delete urlDatabase[URL];
+    return res.redirect('/urls');
+  } else {
+    return res.status(404).send(`You don't have permission to edit this URL`);
+  }
 });
 
 app.post('/urls/:shortURL/edit', (req, res) => {
@@ -92,7 +102,7 @@ app.post('/logout/', (req, res) => {
   res.redirect('/urls');
 });
 
-//POST route to render urls_register.ejs template
+//POST route to register new user
 app.post('/register/', (req, res) => {
   if (checkEmail(users, req.body['email']) === false) {
     const userID = generateRandomString();
@@ -161,8 +171,13 @@ app.get('/urls.json', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
+  //check if user is logged in and if not
+  //redirect to login page
+  if (!req.cookies['user_id']) {
+    return res.redirect('/login');
+  }
   const templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(urlDatabase, req.cookies['user_id']),
     userId: users[req.cookies['user_id']],
   };
   res.render('urls_index', templateVars);
