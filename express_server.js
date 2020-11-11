@@ -57,10 +57,27 @@ app.post('/login/', (req, res) => {
   res.redirect('/urls');
 });
 
+//logout POST route
 app.post('/logout/', (req, res) => {
   res.clearCookie('username');
 
   res.redirect('/urls');
+});
+
+//POST route to render urls_register.ejs template
+app.post('/registerPage/', (req, res) => {
+  const templateVars = {
+    username: req.cookies['username'],
+  };
+  res.render('urls_register', templateVars);
+});
+
+//POST route to render urls_register.ejs template
+app.post('/register/', (req, res) => {
+  const templateVars = {
+    username: req.cookies['username'],
+  };
+  res.render('urls_register', templateVars);
 });
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
