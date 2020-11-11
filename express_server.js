@@ -70,13 +70,15 @@ app.post('/urls/:shortURL/edit', (req, res) => {
 app.post('/login/', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log(getUserId(users, email));
+  const userId = getUserId(users, email);
   if (checkEmail(users, email) === true && checkPassword(users, password)) {
-    console.log('login successful!');
+    res.cookie('user_id', userId);
+    return res.redirect('/urls');
+  } else {
+    return res
+      .status(404)
+      .send('Either the username or password entered was not in our database.');
   }
-  // if (checkEmail(users, username)) res.cookie('username', users[username]);
-
-  res.redirect('/urls');
 });
 
 //logout POST route
@@ -113,10 +115,12 @@ app.post('/register/', (req, res) => {
 
     const templateVars = { urls: urlDatabase, username: users[userID] };
     res.cookie('user_id', userID);
-    res.render('urls_index', templateVars);
+    return res.render('urls_index', templateVars);
   } else {
     console.log('404 erroeewrwjkrhak');
-    res.status(404);
+    return res
+      .status(404)
+      .send('A user with that email already exists in our database');
   }
 });
 
