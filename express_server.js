@@ -104,7 +104,10 @@ app.post('/logout/', (req, res) => {
 
 //POST route to register new user
 app.post('/register/', (req, res) => {
-  if (checkEmail(users, req.body['email']) === false) {
+  if (
+    checkEmail(users, req.body['email']) === false &&
+    req.body.password.length > 3
+  ) {
     const userID = generateRandomString();
 
     users[userID] = {
@@ -113,9 +116,12 @@ app.post('/register/', (req, res) => {
       password: req.body.password,
     };
 
-    const templateVars = { urls: urlDatabase, userId: users[userID] };
+    const templateVars = {
+      urls: urlsForUser(urlDatabase, userID),
+      userId: users[userID],
+    };
     res.cookie('user_id', userID);
-    return res.render('urls_index', templateVars);
+    return res.render('urls_new', templateVars);
   } else {
     return res
       .status(403)
