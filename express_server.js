@@ -15,8 +15,10 @@ app.set('view engine', 'ejs');
 
 //database object, we will convert to true database later
 const urlDatabase = {
-  b2xVn2: 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com',
+  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'CgFjj4' },
+  i3BoGr: { longURL: 'https://www.google.ca', userID: 'CgFjj4' },
+  b6UTxC: { longURL: 'https://www.tsn.ca', userID: 'user2RandomID' },
+  i3BoG9: { longURL: 'https://www.google.ca', userID: 'userRandomID' },
 };
 
 const users = {
@@ -88,21 +90,6 @@ app.post('/logout/', (req, res) => {
 });
 
 //POST route to render urls_register.ejs template
-app.get('/register/', (req, res) => {
-  const templateVars = {
-    userId: users[req.cookies['user_id']],
-  };
-  res.render('urls_register', templateVars);
-});
-
-//POST route to render urls_login.ejs template
-app.get('/login/', (req, res) => {
-  const templateVars = {
-    userId: users[req.cookies['user_id']],
-  };
-  res.render('urls_login', templateVars);
-});
-//POST route to render urls_register.ejs template
 app.post('/register/', (req, res) => {
   if (checkEmail(users, req.body['email']) === false) {
     const userID = generateRandomString();
@@ -123,8 +110,27 @@ app.post('/register/', (req, res) => {
   }
 });
 
+//POST route to render urls_register.ejs template
+app.get('/register/', (req, res) => {
+  const templateVars = {
+    userId: users[req.cookies['user_id']],
+  };
+  res.render('urls_register', templateVars);
+});
+
+//POST route to render urls_login.ejs template
+app.get('/login/', (req, res) => {
+  const templateVars = {
+    userId: users[req.cookies['user_id']],
+  };
+  res.render('urls_login', templateVars);
+});
+
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
+  if (!users[req.cookies['user_id']]) {
+    return res.redirect('/login');
+  }
   const templateVars = {
     userId: users[req.cookies['user_id']],
   };
@@ -135,7 +141,7 @@ app.get('/urls/new', (req, res) => {
 //short /u/shortURL route handler
 app.get('/u/:shortURL', (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
-    const longURL = urlDatabase[req.params.shortURL];
+    const longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
   } else {
     res.render('not_found');
@@ -162,7 +168,7 @@ app.get('/urls', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     userId: users[req.cookies['user_id']],
   };
   if (urlDatabase[req.params.shortURL]) {
