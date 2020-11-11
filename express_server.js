@@ -184,15 +184,19 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    userId: users[req.cookies['user_id']],
-  };
-  if (urlDatabase[req.params.shortURL]) {
-    res.render('urls_show', templateVars);
+  if (!req.cookies['user_id']) {
+    return res.redirect('/login');
   } else {
-    res.render('not_found');
+    const templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      userId: users[req.cookies['user_id']],
+    };
+    if (urlDatabase[req.params.shortURL]) {
+      res.render('urls_show', templateVars);
+    } else {
+      res.render('not_found');
+    }
   }
 });
 
