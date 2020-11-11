@@ -76,8 +76,8 @@ app.post('/login/', (req, res) => {
     return res.redirect('/urls');
   } else {
     return res
-      .status(404)
-      .send('Either the username or password entered was not in our database.');
+      .status(403)
+      .send('Either the email or password entered was not in our database.');
   }
 });
 
@@ -90,7 +90,7 @@ app.post('/logout/', (req, res) => {
 //POST route to render urls_register.ejs template
 app.get('/register/', (req, res) => {
   const templateVars = {
-    username: users[req.cookies['user_id']],
+    userId: users[req.cookies['user_id']],
   };
   res.render('urls_register', templateVars);
 });
@@ -98,7 +98,7 @@ app.get('/register/', (req, res) => {
 //POST route to render urls_login.ejs template
 app.get('/login/', (req, res) => {
   const templateVars = {
-    username: users[req.cookies['user_id']],
+    userId: users[req.cookies['user_id']],
   };
   res.render('urls_login', templateVars);
 });
@@ -113,13 +113,12 @@ app.post('/register/', (req, res) => {
       password: req.body.password,
     };
 
-    const templateVars = { urls: urlDatabase, username: users[userID] };
+    const templateVars = { urls: urlDatabase, userId: users[userID] };
     res.cookie('user_id', userID);
     return res.render('urls_index', templateVars);
   } else {
-    console.log('404 erroeewrwjkrhak');
     return res
-      .status(404)
+      .status(403)
       .send('A user with that email already exists in our database');
   }
 });
@@ -127,7 +126,7 @@ app.post('/register/', (req, res) => {
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
   const templateVars = {
-    username: users[req.cookies['user_id']],
+    userId: users[req.cookies['user_id']],
   };
 
   res.render('urls_new', templateVars);
@@ -155,7 +154,7 @@ app.get('/urls.json', (req, res) => {
 app.get('/urls', (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: users[req.cookies['user_id']],
+    userId: users[req.cookies['user_id']],
   };
   res.render('urls_index', templateVars);
 });
@@ -164,7 +163,7 @@ app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: users[req.cookies['user_id']],
+    userId: users[req.cookies['user_id']],
   };
   if (urlDatabase[req.params.shortURL]) {
     res.render('urls_show', templateVars);
