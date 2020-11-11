@@ -56,28 +56,27 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 app.post('/urls/:shortURL/edit', (req, res) => {
   let URL = req.params.shortURL;
-
   res.redirect(`/urls/${URL}`);
 });
 
 //login POST route
 app.post('/login/', (req, res) => {
   const username = req.body.username;
-  res.cookie('username', username);
+  res.cookie('username', users[username]);
 
   res.redirect('/urls');
 });
 
 //logout POST route
 app.post('/logout/', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
 //POST route to render urls_register.ejs template
 app.post('/registerPage/', (req, res) => {
   const templateVars = {
-    username: req.cookies['username'],
+    username: users[req.cookies['user_id']],
   };
   res.render('urls_register', templateVars);
 });
@@ -85,18 +84,21 @@ app.post('/registerPage/', (req, res) => {
 //POST route to render urls_register.ejs template
 app.post('/register/', (req, res) => {
   const userID = generateRandomString();
-  users[userID] = { email: req.body.email, password: req.body.password };
+  users[userID] = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password,
+  };
   console.log(users);
-  // const templateVars = { urls: urlDatabase, username: userID };
+  const templateVars = { urls: urlDatabase, username: users[userID] };
   res.cookie('user_id', userID);
-  // res.render('urls_index', templateVars);
-  res.redirect('/urls');
+  res.render('urls_index', templateVars);
 });
 
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
   const templateVars = {
-    username: req.cookies['username'],
+    username: users[req.cookies['user_id']],
   };
 
   res.render('urls_new', templateVars);
@@ -124,7 +126,10 @@ app.get('/urls.json', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  const templateVars = {
+    urls: urlDatabase,
+    username: users[req.cookies['user_id']],
+  };
   res.render('urls_index', templateVars);
 });
 
@@ -132,7 +137,7 @@ app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies['username'],
+    username: users[req.cookies['user_id']],
   };
   if (urlDatabase[req.params.shortURL]) {
     res.render('urls_show', templateVars);

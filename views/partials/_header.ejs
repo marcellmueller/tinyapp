@@ -20,7 +20,8 @@
     </div>
 
     <% if(username !== undefined){ %>
-      <h5>Logged in as: <%- username %></h5>
+      
+      <h5>Logged in as: <%- username.email %></h5>
       <form method="POST" action="/logout">
         <button type="submit" class=" align-middle btn btn-primary">Logout</button>
         </button>
