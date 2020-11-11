@@ -15,6 +15,19 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com',
 };
 
+const users = {
+  userRandomID: {
+    id: 'userRandomID',
+    email: 'user@example.com',
+    password: 'purple-monkey-dinosaur',
+  },
+  user2RandomID: {
+    id: 'user2RandomID',
+    email: 'user2@example.com',
+    password: 'dishwasher-funk',
+  },
+};
+
 //handle POST request for our new URL form
 app.post('/urls', (req, res) => {
   const shortURL = generateRandomString(res);
@@ -74,11 +87,13 @@ app.post('/registerPage/', (req, res) => {
 
 //POST route to render urls_register.ejs template
 app.post('/register/', (req, res) => {
-  const templateVars = {
-    username: req.cookies['username'],
-  };
-  res.render('urls_register', templateVars);
+  const userID = generateRandomString();
+  users[userID] = { email: req.body.email, password: req.body.password };
+  console.log(users);
+  const templateVars = { urls: urlDatabase, username: userID };
+  res.render('urls_index', templateVars);
 });
+
 //GET route to render urls_new.ejs template
 app.get('/urls/new', (req, res) => {
   const templateVars = {
