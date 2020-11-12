@@ -1,13 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const login = require('./login');
+const helpers = require('./helpers');
 const cookieSession = require('cookie-session');
-const checkEmail = login.checkEmail;
-const getUserId = login.getUserId;
-const urlsForUser = login.urlsForUser;
+const checkEmail = helpers.checkEmail;
+const getUserId = helpers.getUserId;
+const urlsForUser = helpers.urlsForUser;
+const generateRandomString = helpers.generateRandomString;
 const app = express();
-const generateRandomString = require('./generateRandomString');
+
 app.use(
   cookieSession({
     name: 'session',
@@ -17,7 +18,6 @@ app.use(
 );
 app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = 8080;
-
 app.set('view engine', 'ejs');
 
 //database object, we will convert to true database later

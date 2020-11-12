@@ -7,6 +7,7 @@ const checkEmail = (users, formEmail) => {
   return false;
 };
 
+//get user id by searching their email in the database
 const getUserId = (users, email) => {
   let userId = '';
   for (const each in users) {
@@ -28,13 +29,6 @@ const getUserId = (users, email) => {
 //   return false;
 // };
 
-const urlDatabase = {
-  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'CgFjj4' },
-  i3BoGr: { longURL: 'https://www.google.ca', userID: 'CgFjj4' },
-  b6UTxC: { longURL: 'https://www.tsn.ca', userID: 'user2RandomID' },
-  i3BoG9: { longURL: 'https://www.google.ca', userID: 'userRandomID' },
-};
-
 const urlsForUser = (urlDatabase, userId) => {
   const userURLs = {};
   for (const each in urlDatabase) {
@@ -45,5 +39,28 @@ const urlsForUser = (urlDatabase, userId) => {
   return userURLs;
 };
 
-console.log(urlsForUser(urlDatabase, 'CgFjj4'));
-module.exports = { getUserId, checkEmail, urlsForUser };
+///generateRandomString and helper functions below
+
+//loop 6 times to call generateRandomChar
+//and create our random string
+const generateRandomString = () => {
+  let string = '';
+  for (let i = 0; i < 6; i++) {
+    string += generateRandomChar();
+  }
+  return string;
+};
+
+//call random on the length of the string of chars
+//and return random char
+const generateRandomChar = () => {
+  const chars =
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  return chars[random(chars.length)];
+};
+
+const random = (max) => {
+  return Math.floor(Math.random() * max);
+};
+
+module.exports = { getUserId, checkEmail, urlsForUser, generateRandomString };
