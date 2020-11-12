@@ -168,16 +168,6 @@ app.get('/urls/new', (req, res) => {
   res.render('urls_new', templateVars);
 });
 
-//short /u/shortURL route handler
-app.get('/u/:shortURL', (req, res) => {
-  if (urlDatabase[req.params.shortURL]) {
-    const longURL = urlDatabase[req.params.shortURL].longURL;
-    res.redirect(longURL);
-  } else {
-    res.render('not_found');
-  }
-});
-
 //redirect to index if user goes to base directory
 app.get('/', (req, res) => {
   res.redirect('/urls');
@@ -198,6 +188,18 @@ app.get('/urls', (req, res) => {
     userId: users[req.session.user_id],
   };
   res.render('urls_index', templateVars);
+});
+
+//short /u/shortURL route handler
+app.get('/u/:shortURL', (req, res) => {
+  const URL = req.params.shortURL;
+
+  if (!urlDatabase[URL]) {
+    return res.status(403).send('URL not found');
+  } else {
+    const longURL = urlDatabase[URL].longURL;
+    res.redirect(longURL);
+  }
 });
 
 app.get('/urls/:shortURL', (req, res) => {
