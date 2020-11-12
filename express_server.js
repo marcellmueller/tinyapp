@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const helpers = require('./helpers');
-
 const cookieSession = require('cookie-session');
 const checkEmail = helpers.checkEmail;
 const getUserId = helpers.getUserId;
@@ -11,13 +10,12 @@ const generateRandomString = helpers.generateRandomString;
 const readJSON = helpers.readJSON;
 const updateJSON = helpers.updateJSON;
 const trackVisits = helpers.trackVisits;
-const searchIP = helpers.searchIP;
+const setIpCookie = helpers.setIpCookie;
+const visitorLog = helpers.visitorLog;
 const usersPath = './users.JSON';
 const urlDatabasePath = './urlDatabase.JSON';
-const userIpPath = './userIp.JSON';
 let urlDatabase = readJSON(urlDatabasePath);
 let users = readJSON(usersPath);
-let userIp = readJSON(userIpPath);
 
 const app = express();
 
@@ -29,15 +27,7 @@ app.use(
   })
 );
 
-const setIpCookie = (data, IP, userIpPath) => {
-  if (searchIP(data, IP) === false) {
-    data['IP'].push(IP);
-    updateJSON(data, userIpPath);
-    console.log(data);
-  }
-};
-
-const PORT = process.env.PORT || 3338;
+const PORT = 8080;
 app.use(bodyParser.urlencoded({ extended: false }));
 // const PORT = 8080;
 app.set('view engine', 'ejs');
@@ -51,7 +41,7 @@ app.post('/urls', (req, res) => {
   urlDatabase[shortURL] = {
     longURL: longURL,
     userID: userId,
-    tracker: { visits: 0, uniqueVisitors: 0, visitorLog: [] },
+    tracker: { visits: 0, uniqueVisitors: [], visitorLog: [] },
   };
   urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
   console.log(urlDatabase);
@@ -203,19 +193,6 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars);
 });
 
-//short /u/shortURL route handler
-app.get('/u/:shortURL', (req, res) => {
-  req.session.userIP = req.ip;
-  setIpCookie(userIp, req.ip, userIpPath);
-  const URL = req.params.shortURL;
-  if (!urlDatabase[URL]) {
-    return res.status(403).send('URL not found');
-  } else {
-    const longURL = urlDatabase[URL].longURL;
-    res.redirect(longURL);
-  }
-});
-
 app.get('/urls/:shortURL', (req, res) => {
   const URL = req.params.shortURL;
   if (!urlDatabase[req.params.shortURL]) {
@@ -228,15 +205,29 @@ app.get('/urls/:shortURL', (req, res) => {
   } else if (req.session.user_id === urlDatabase[URL].userID) {
     const templateVars = {
       shortURL: URL,
-      longURL: urlDatabase[req.params.shortURL].longURL,
+      longURL: urlDatabase[URL].longURL,
       userId: users[req.session.user_id],
+      visits: urlDatabase[URL].tracker.visits,
+      unique: urlDatabase[URL].tracker.uniqueVisitors.length,
     };
-    trackVisits(URL, urlDatabase, urlDatabasePath);
-    console.log(urlDatabase[URL].tracker.visits);
     res.render('urls_show', templateVars);
   }
 });
 
+//short /u/shortURL route handler
+app.get('/u/:shortURL', (req, res) => {
+  req.session.userIP = req.ip;
+  const URL = req.params.shortURL;
+  setIpCookie(urlDatabase, req.ip, urlDatabasePath, URL);
+  visitorLog(urlDatabase, URL, req.ip);
+  trackVisits(URL, urlDatabase, urlDatabasePath);
+  if (!urlDatabase[URL]) {
+    return res.status(403).send('URL not found');
+  } else {
+    const longURL = urlDatabase[URL].longURL;
+    res.redirect(longURL);
+  }
+});
 //404 error handler
 
 app.use(function (req, res, next) {

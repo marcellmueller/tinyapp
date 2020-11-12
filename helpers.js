@@ -28,14 +28,29 @@ const trackVisits = (URL, urlDatabase, urlDatabasePath) => {
 };
 
 //see if user IP exists in list
-const searchIP = (data, IP) => {
-  const ipList = data['IP'];
+const searchIP = (data, URL, IP) => {
+  const ipList = data[URL].tracker.uniqueVisitors;
   for (const each in ipList) {
-    if (IP === each) {
+    if (IP === ipList[each]) {
       return true;
     }
   }
   return false;
+};
+
+const visitorLog = (data, URL, IP) => {
+  let now = new Date();
+  const visitorLog = data[URL].tracker.visitorLog;
+  visitorLog.push({ Date: now, IP: IP });
+};
+
+const setIpCookie = (data, IP, path, URL) => {
+  console.log(data[URL].tracker.uniqueVisitors);
+  if (searchIP(data, URL, IP) === false) {
+    data[URL].tracker.uniqueVisitors.push(IP);
+    updateJSON(data, path);
+    console.log(data);
+  }
 };
 
 //get users URLs and return object for display
@@ -107,4 +122,6 @@ module.exports = {
   updateJSON,
   trackVisits,
   searchIP,
+  setIpCookie,
+  visitorLog,
 };
