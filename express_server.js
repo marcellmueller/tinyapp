@@ -83,6 +83,11 @@ app.post('/login/', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const userId = getUserId(users, email);
+  if (!userId) {
+    return res
+      .status(403)
+      .send('Either the email or password entered was not in our database.');
+  }
   const hashedPassword = users[userId].password;
   const bcryptCheck = bcrypt.compareSync(password, hashedPassword);
   console.log(bcryptCheck);
