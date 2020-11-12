@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const checkEmail = (users, formEmail) => {
   for (const each in users) {
     if (formEmail === users[each].email) {
@@ -40,6 +42,28 @@ const urlsForUser = (urlDatabase, userId) => {
   return userURLs;
 };
 
+const saveJSON = (data, path) => {
+  try {
+    fs.writeFileSync(path, JSON.stringify(data));
+  } catch (err) {
+    console.log('Error writing to JSON');
+  }
+};
+
+const readJSON = (path) => {
+  try {
+    const data = fs.readFileSync(path, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    console.log('Could not read from JSON');
+    return false;
+  }
+};
+
+const updateJSON = (data, path) => {
+  saveJSON(data, path);
+  return readJSON(path);
+};
 ///generateRandomString and helper functions below
 
 //loop 6 times to call generateRandomChar
@@ -64,4 +88,12 @@ const random = (max) => {
   return Math.floor(Math.random() * max);
 };
 
-module.exports = { getUserId, checkEmail, urlsForUser, generateRandomString };
+module.exports = {
+  getUserId,
+  checkEmail,
+  urlsForUser,
+  generateRandomString,
+  saveJSON,
+  readJSON,
+  updateJSON,
+};

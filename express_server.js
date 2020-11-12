@@ -2,11 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const helpers = require('./helpers');
+const fs = require('fs');
+
 const cookieSession = require('cookie-session');
 const checkEmail = helpers.checkEmail;
 const getUserId = helpers.getUserId;
 const urlsForUser = helpers.urlsForUser;
 const generateRandomString = helpers.generateRandomString;
+const saveJSON = helpers.saveJSON;
+const readJSON = helpers.readJSON;
+const updateJSON = helpers.updateJSON;
+
+const usersPath = './users.JSON';
+const urlDatabasePath = './urlDatabase.JSON';
+let urlDatabase = readJSON(urlDatabasePath);
+let users = readJSON(usersPath);
+
 const app = express();
 
 app.use(
@@ -20,22 +31,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = 8080;
 app.set('view engine', 'ejs');
 
-//database object, we will convert to true database later
-const urlDatabase = {
-  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'CgFjj4' },
-  i3BoGr: { longURL: 'https://www.google.ca', userID: 'CgFjj4' },
-  b6UTxC: { longURL: 'https://www.tsn.ca', userID: 'user2RandomID' },
-  i3BoG9: { longURL: 'https://www.google.ca', userID: 'userRandomID' },
-};
-
-const users = {
-  Mn9pYP: {
-    id: 'Mn9pYP',
-    email: 'mail.marcelm@gmail.com',
-    password: '$2b$10$oxvhaSpge0vpDIrEwuO7YuTA1mhb15kPmt5GA1y7jx4VEaZafKQoe',
-  },
-};
-
 //handle POST request for our new URL form
 app.post('/urls', (req, res) => {
   const shortURL = generateRandomString(res);
@@ -43,7 +38,7 @@ app.post('/urls', (req, res) => {
   const userId = req.session.user_id;
   //save to database
   urlDatabase[shortURL] = { longURL: longURL, userID: userId };
-
+  urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
   console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
 });
@@ -54,6 +49,8 @@ app.post('/urls/:id', (req, res) => {
   const user = urlDatabase[URL].userID;
   if (user === req.session.user_id) {
     urlDatabase[URL].longURL = req.body.longURL;
+    urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
+
     return res.redirect('/urls');
   } else {
     return res.status(404).send(`You don't have permission to edit this URL`);
@@ -67,6 +64,8 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   //check if logged in user is the same as URL up for deletion
   if (user === req.session.user_id) {
     delete urlDatabase[URL];
+    urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
+
     return res.redirect('/urls');
   } else {
     return res.status(404).send(`You don't have permission to edit this URL`);
@@ -121,7 +120,7 @@ app.post('/register/', (req, res) => {
       email: req.body.email,
       password: hashedPassword,
     };
-    console.log(users);
+    users = updateJSON(users, usersPath);
     const templateVars = {
       urls: urlsForUser(urlDatabase, userId),
       userId: users[userId],
