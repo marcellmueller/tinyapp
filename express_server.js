@@ -36,8 +36,10 @@ const setIpCookie = (data, IP, userIpPath) => {
     console.log(data);
   }
 };
+
+const PORT = process.env.PORT || 3338;
 app.use(bodyParser.urlencoded({ extended: false }));
-const PORT = 8080;
+// const PORT = 8080;
 app.set('view engine', 'ejs');
 
 //handle POST request for our new URL form
