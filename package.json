@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon -L express_server.js",
+    "start": "node ./bin/www",
     "test": "./node_modules/mocha/bin/mocha"
   },
   "repository": {
