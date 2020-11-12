@@ -1,12 +1,1 @@
-{
-  "b6UTxQ": {
-    "longURL": "https://www.tsn.ca",
-    "userID": "CgFjj4",
-    "tracker": { "visits": 0, "uniqueVisitors": 0, "visitorLog": [] }
-  },
-  "U734sG": {
-    "longURL": "http://www.asdasda.ca",
-    "userID": "Mn9pYP",
-    "tracker": { "visits": 1, "uniqueVisitors": 0, "visitorLog": [] }
-  }
-}
+{"b6UTxQ":{"longURL":"https://www.tsn.ca","userID":"CgFjj4","tracker":{"visits":0,"uniqueVisitors":0,"visitorLog":[]}},"U734sG":{"longURL":"http://www.asdasda.ca","userID":"Mn9pYP","tracker":{"visits":2,"uniqueVisitors":0,"visitorLog":[]}},"wt86CJ":{"longURL":"http://www.cbc.ca","userID":"Mn9pYP","tracker":{"visits":1,"uniqueVisitors":0,"visitorLog":[]}},"jtdzab":{"longURL":"http://www.bbc.com","userID":"Mn9pYP","tracker":{"visits":1,"uniqueVisitors":0,"visitorLog":[]}}}

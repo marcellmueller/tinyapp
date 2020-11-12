@@ -21,9 +21,21 @@ const getUserId = (users, email) => {
   return false;
 };
 
+//tracks page visits
 const trackVisits = (URL, urlDatabase, urlDatabasePath) => {
   urlDatabase[URL].tracker.visits++;
   urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
+};
+
+//see if user IP exists in list
+const searchIP = (data, IP) => {
+  const ipList = data['IP'];
+  for (const each in ipList) {
+    if (IP === each) {
+      return true;
+    }
+  }
+  return false;
 };
 
 //get users URLs and return object for display
@@ -94,4 +106,5 @@ module.exports = {
   readJSON,
   updateJSON,
   trackVisits,
+  searchIP,
 };

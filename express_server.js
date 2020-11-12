@@ -11,20 +11,31 @@ const generateRandomString = helpers.generateRandomString;
 const readJSON = helpers.readJSON;
 const updateJSON = helpers.updateJSON;
 const trackVisits = helpers.trackVisits;
+const searchIP = helpers.searchIP;
 const usersPath = './users.JSON';
 const urlDatabasePath = './urlDatabase.JSON';
+const userIpPath = './userIp.JSON';
 let urlDatabase = readJSON(urlDatabasePath);
 let users = readJSON(usersPath);
+let userIp = readJSON(userIpPath);
 
 const app = express();
 
 app.use(
   cookieSession({
     name: 'session',
-    keys: ['key1'],
+    keys: ['key1', 'key2'],
     overwrite: true,
   })
 );
+
+const setIpCookie = (data, IP, userIpPath) => {
+  if (searchIP(data, IP) === false) {
+    data['IP'].push(IP);
+    updateJSON(data, userIpPath);
+    console.log(data);
+  }
+};
 app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = 8080;
 app.set('view engine', 'ejs');
@@ -192,8 +203,9 @@ app.get('/urls', (req, res) => {
 
 //short /u/shortURL route handler
 app.get('/u/:shortURL', (req, res) => {
+  req.session.userIP = req.ip;
+  setIpCookie(userIp, req.ip, userIpPath);
   const URL = req.params.shortURL;
-
   if (!urlDatabase[URL]) {
     return res.status(403).send('URL not found');
   } else {
