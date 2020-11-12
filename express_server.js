@@ -209,6 +209,7 @@ app.get('/urls/:shortURL', (req, res) => {
       userId: users[req.session.user_id],
       visits: urlDatabase[URL].tracker.visits,
       unique: urlDatabase[URL].tracker.uniqueVisitors.length,
+      visitorLogs: urlDatabase[URL].tracker.visitorLog,
     };
     res.render('urls_show', templateVars);
   }
@@ -218,9 +219,12 @@ app.get('/urls/:shortURL', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   req.session.userIP = req.ip;
   const URL = req.params.shortURL;
+
+  //call tracking function helpers
   setIpCookie(urlDatabase, req.ip, urlDatabasePath, URL);
   visitorLog(urlDatabase, URL, req.ip);
   trackVisits(URL, urlDatabase, urlDatabasePath);
+
   if (!urlDatabase[URL]) {
     return res.status(403).send('URL not found');
   } else {
@@ -228,11 +232,7 @@ app.get('/u/:shortURL', (req, res) => {
     res.redirect(longURL);
   }
 });
-//404 error handler
 
-app.use(function (req, res, next) {
-  res.status(404).render('not_found');
-});
 app.listen(PORT, () => {
   console.log(`TinyURL listening on port ${PORT}!`);
 });

@@ -37,7 +37,30 @@
         This TinyURL has been visited <%= visits %> times by <%= unique %>
         unique visitors.
       </h5>
-      <div></div>
+
+      <div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Timestamp</th>
+              <th scope="col">IP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(let visitors in visitorLogs) { %>
+            <tr>
+              <td><%= visitorLogs[visitors].Date %></a></td>
+              <td>
+                <%= visitorLogs[visitors].IP %></a>
+              </td>
+     
+            </tr>
+
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
       <div class="card-footer text-muted"></div>
     </div>
     <!-- Bootstrap JS -->
