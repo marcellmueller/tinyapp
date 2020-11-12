@@ -21,15 +21,10 @@ const getUserId = (users, email) => {
   return false;
 };
 
-//depreciated since storing passwords in plain text is bad
-// const checkPassword = (users, password) => {
-//   for (const each in users) {
-//     if (users[each].password === password) {
-//       return true;
-//     }
-//   }
-//   return false;
-// };
+const trackVisits = (URL, urlDatabase, urlDatabasePath) => {
+  urlDatabase[URL].tracker.visits++;
+  urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
+};
 
 //get users URLs and return object for display
 const urlsForUser = (urlDatabase, userId) => {
@@ -60,10 +55,12 @@ const readJSON = (path) => {
   }
 };
 
+//used to save JSON and update the object in express_server
 const updateJSON = (data, path) => {
   saveJSON(data, path);
   return readJSON(path);
 };
+
 ///generateRandomString and helper functions below
 
 //loop 6 times to call generateRandomChar
@@ -96,4 +93,5 @@ module.exports = {
   saveJSON,
   readJSON,
   updateJSON,
+  trackVisits,
 };

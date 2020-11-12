@@ -2,17 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const helpers = require('./helpers');
-const fs = require('fs');
 
 const cookieSession = require('cookie-session');
 const checkEmail = helpers.checkEmail;
 const getUserId = helpers.getUserId;
 const urlsForUser = helpers.urlsForUser;
 const generateRandomString = helpers.generateRandomString;
-const saveJSON = helpers.saveJSON;
 const readJSON = helpers.readJSON;
 const updateJSON = helpers.updateJSON;
-
+const trackVisits = helpers.trackVisits;
 const usersPath = './users.JSON';
 const urlDatabasePath = './urlDatabase.JSON';
 let urlDatabase = readJSON(urlDatabasePath);
@@ -37,7 +35,11 @@ app.post('/urls', (req, res) => {
   const longURL = req.body.longURL;
   const userId = req.session.user_id;
   //save to database
-  urlDatabase[shortURL] = { longURL: longURL, userID: userId };
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: userId,
+    tracker: { visits: 0, uniqueVisitors: 0, visitorLog: [] },
+  };
   urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
   console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
@@ -48,6 +50,7 @@ app.post('/urls/:id', (req, res) => {
   let URL = req.params.id;
   const user = urlDatabase[URL].userID;
   if (user === req.session.user_id) {
+    //save to database
     urlDatabase[URL].longURL = req.body.longURL;
     urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
 
@@ -63,6 +66,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   const user = urlDatabase[URL].userID;
   //check if logged in user is the same as URL up for deletion
   if (user === req.session.user_id) {
+    //delete URL from database
     delete urlDatabase[URL];
     urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
 
@@ -144,6 +148,8 @@ app.get('/register/', (req, res) => {
 
 //POST route to render urls_login.ejs template
 app.get('/login/', (req, res) => {
+  console.log(urlDatabase);
+
   const templateVars = {
     userId: users[req.session.user_id],
   };
@@ -195,19 +201,23 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  if (!req.session.user_id) {
+  const URL = req.params.shortURL;
+  if (!urlDatabase[req.params.shortURL]) {
+    return res.status(403).send('URL not found');
+    //redirect to login if not logged in
+  } else if (!req.session.user_id) {
     return res.redirect('/login');
-  } else {
+  } else if (req.session.user_id !== urlDatabase[URL].userID) {
+    res.status(403).send('You do not have access to this page');
+  } else if (req.session.user_id === urlDatabase[URL].userID) {
     const templateVars = {
-      shortURL: req.params.shortURL,
+      shortURL: URL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       userId: users[req.session.user_id],
     };
-    if (urlDatabase[req.params.shortURL]) {
-      res.render('urls_show', templateVars);
-    } else {
-      res.render('not_found');
-    }
+    trackVisits(URL, urlDatabase, urlDatabasePath);
+    console.log(urlDatabase[URL].tracker.visits);
+    res.render('urls_show', templateVars);
   }
 });
 

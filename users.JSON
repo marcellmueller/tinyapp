@@ -1,17 +1,1 @@
-{
-  "Mn9pYP": {
-    "id": "Mn9pYP",
-    "email": "mail.marcelm@gmail.com",
-    "password": "$2b$10$oxvhaSpge0vpDIrEwuO7YuTA1mhb15kPmt5GA1y7jx4VEaZafKQoe"
-  },
-  "hw60bM": {
-    "id": "hw60bM",
-    "email": "test@test.ca",
-    "password": "$2b$10$sB2RoELrVVIP5tiiheZaLOldHYU/kth1LSQInC/HR79liDkj6imD6"
-  },
-  "ss827F": {
-    "id": "ss827F",
-    "email": "ISJSONWORKING@asdasd.com",
-    "password": "$2b$10$a.nOtBLbM6F971KrmIYG2Of9FICv13YXDcNiq/6q46K4zJxcUjXsG"
-  }
-}
+{"Mn9pYP":{"id":"Mn9pYP","email":"mail.marcelm@gmail.com","password":"$2b$10$oxvhaSpge0vpDIrEwuO7YuTA1mhb15kPmt5GA1y7jx4VEaZafKQoe"},"hw60bM":{"id":"hw60bM","email":"test@test.ca","password":"$2b$10$sB2RoELrVVIP5tiiheZaLOldHYU/kth1LSQInC/HR79liDkj6imD6"},"ss827F":{"id":"ss827F","email":"ISJSONWORKING@asdasd.com","password":"$2b$10$a.nOtBLbM6F971KrmIYG2Of9FICv13YXDcNiq/6q46K4zJxcUjXsG"},"YC9QwY":{"id":"YC9QwY","email":"asdasd@asdasd.com","password":"$2b$10$KOCdMTCpYcxlFUVajnuowOQI.yU.NyXIkS75GFyvgSmy6CJGaFka."}}
