@@ -55,7 +55,6 @@ app.put('/urls/:id', (req, res) => {
     //save to database
     urlDatabase[URL].longURL = req.body.longURL;
     urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
-
     return res.redirect('/urls');
   } else {
     return errorHandling(
