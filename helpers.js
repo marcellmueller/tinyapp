@@ -1,5 +1,13 @@
 const fs = require('fs');
 
+const errorHandling = (res, req, users, message) => {
+  const templateVars = {
+    userId: users[req.session.user_id],
+    ErrorMessage: message,
+  };
+  return res.render('not_found', templateVars);
+};
+
 const checkEmail = (users, formEmail) => {
   for (const each in users) {
     if (formEmail === users[each].email) {
@@ -90,8 +98,6 @@ const updateJSON = (data, path) => {
 
 ///generateRandomString and helper functions below
 
-//loop 6 times to call generateRandomChar
-//and create our random string
 const generateRandomString = () => {
   let string = '';
   for (let i = 0; i < 6; i++) {
@@ -124,4 +130,5 @@ module.exports = {
   searchIP,
   setIpCookie,
   visitorLog,
+  errorHandling,
 };

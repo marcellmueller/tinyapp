@@ -21,7 +21,7 @@
           Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
         </p>
         <label for="longURL"><h5>Update URL:</h5></label>
-        <form method="POST" action="/urls/<%= shortURL %>">
+        <form method="POST" action="/urls/<%= shortURL %>/?_method=PUT">
           <input
             class="text-center"
             type="url"
@@ -30,7 +30,7 @@
             value="http://www."
             style="width: 300px; margin: 1em"
           />
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-primary">Update</button>
         </form>
       </div>
       <h5>
