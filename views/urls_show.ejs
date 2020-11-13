@@ -16,9 +16,9 @@
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <h5 class="card-title">Original URL: <a href="<%= longURL %>"><%= longURL %></a></h5>
+        <h6 class="card-title">Original URL: <a href="<%= longURL %>"><%= longURL %></a></h6>
         <p class="card-text">
-          Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
+          <h2>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></h2>
         </p>
         <label for="longURL"><h5>Update URL:</h5></label>
         <form method="POST" action="/urls/<%= shortURL %>/?_method=PUT">
