@@ -30,8 +30,7 @@ app.use(
   })
 );
 
-const PORT = 8080;
-// const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 //handle POST request for our new URL form
 app.post('/urls', (req, res) => {
@@ -239,7 +238,6 @@ app.get('/u/:shortURL', (req, res) => {
     setIpCookie(urlDatabase, req.ip, urlDatabasePath, URL);
     visitorLog(urlDatabase, URL, req.ip);
     trackVisits(URL, urlDatabase, urlDatabasePath);
-
     const longURL = urlDatabase[URL].longURL;
     res.redirect(longURL);
   } else {

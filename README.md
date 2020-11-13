@@ -17,6 +17,7 @@ Has analytics to see number of visits, number of unique visitors and a visitor l
 - bcrypt
 - body-parser
 - cookie-session
+- method-override
 
 ## Getting Started
 
