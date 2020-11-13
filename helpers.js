@@ -53,11 +53,9 @@ const visitorLog = (data, URL, IP) => {
 };
 
 const setIpCookie = (data, IP, path, URL) => {
-  console.log(data[URL].tracker.uniqueVisitors);
   if (searchIP(data, URL, IP) === false) {
     data[URL].tracker.uniqueVisitors.push(IP);
     updateJSON(data, path);
-    console.log(data);
   }
 };
 
