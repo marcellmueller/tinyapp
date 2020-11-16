@@ -4,20 +4,10 @@ const bcrypt = require('bcrypt');
 const helpers = require('./helpers');
 const methodOverride = require('method-override');
 const cookieSession = require('cookie-session');
-const checkEmail = helpers.checkEmail;
-const getUserId = helpers.getUserId;
-const urlsForUser = helpers.urlsForUser;
-const generateRandomString = helpers.generateRandomString;
-const readJSON = helpers.readJSON;
-const updateJSON = helpers.updateJSON;
-const trackVisits = helpers.trackVisits;
-const setIpCookie = helpers.setIpCookie;
-const visitorLog = helpers.visitorLog;
-const errorHandling = helpers.errorHandling;
 const usersPath = './users.JSON';
 const urlDatabasePath = './urlDatabase.JSON';
-let urlDatabase = readJSON(urlDatabasePath);
-let users = readJSON(usersPath);
+let urlDatabase = helpers.readJson(urlDatabasePath);
+let users = helpers.readJson(usersPath);
 const app = express();
 app.set('view engine', 'ejs');
 app.use(methodOverride('_method'));
@@ -34,30 +24,30 @@ const PORT = process.env.PORT || 8080;
 
 //handle POST request for our new URL form
 app.post('/urls', (req, res) => {
-  const shortURL = generateRandomString(res);
-  const longURL = req.body.longURL;
+  const shortUrl = helpers.generateRandomString(res);
+  const longUrl = req.body.longUrl;
   const userId = req.session.user_id;
   //save to database
-  urlDatabase[shortURL] = {
-    longURL: longURL,
-    userID: userId,
+  urlDatabase[shortUrl] = {
+    longUrl: longUrl,
+    userId: userId,
     tracker: { visits: 0, uniqueVisitors: [], visitorLog: [] },
   };
-  urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
-  res.redirect(`urls/${shortURL}`);
+  urlDatabase = helpers.updateJson(urlDatabase, urlDatabasePath);
+  res.redirect(`urls/${shortUrl}`);
 });
 
 //edit URL post route
 app.put('/urls/:id', (req, res) => {
-  let URL = req.params.id;
-  const user = urlDatabase[URL].userID;
+  let url = req.params.id;
+  const user = urlDatabase[url].userId;
   if (user === req.session.user_id) {
     //save to database
-    urlDatabase[URL].longURL = req.body.longURL;
-    urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
+    urlDatabase[url].longUrl = req.body.longUrl;
+    urlDatabase = helpers.updateJson(urlDatabase, urlDatabasePath);
     return res.redirect('/urls');
   } else {
-    return errorHandling(
+    return helpers.errorHandling(
       res,
       req,
       users,
@@ -67,18 +57,18 @@ app.put('/urls/:id', (req, res) => {
 });
 
 //delete button POST route
-app.delete('/urls/:shortURL/delete', (req, res) => {
-  let URL = req.params.shortURL;
-  const user = urlDatabase[URL].userID;
+app.delete('/urls/:shortUrl/delete', (req, res) => {
+  let url = req.params.shortUrl;
+  const user = urlDatabase[url].userId;
   //check if logged in user is the same as URL up for deletion
   if (user === req.session.user_id) {
     //delete URL from database
-    delete urlDatabase[URL];
-    urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
+    delete urlDatabase[url];
+    urlDatabase = helpers.updateJson(urlDatabase, urlDatabasePath);
 
     return res.redirect('/urls');
   } else {
-    errorHandling(
+    helpers.errorHandling(
       res,
       req,
       users,
@@ -87,18 +77,18 @@ app.delete('/urls/:shortURL/delete', (req, res) => {
   }
 });
 
-app.post('/urls/:shortURL/edit', (req, res) => {
-  let URL = req.params.shortURL;
-  res.redirect(`/urls/${URL}`);
+app.post('/urls/:shortUrl/edit', (req, res) => {
+  let url = req.params.shortUrl;
+  res.redirect(`/urls/${url}`);
 });
 
 //login POST route
 app.post('/login/', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const userId = getUserId(users, email);
+  const userId = helpers.getUserId(users, email);
   if (!userId) {
-    return errorHandling(
+    return helpers.errorHandling(
       res,
       req,
       users,
@@ -107,11 +97,11 @@ app.post('/login/', (req, res) => {
   }
   const hashedPassword = users[userId].password;
   const bcryptCheck = bcrypt.compareSync(password, hashedPassword);
-  if (checkEmail(users, email) === true && bcryptCheck === true) {
+  if (helpers.checkEmail(users, email) === true && bcryptCheck === true) {
     req.session.user_id = userId;
     return res.redirect('/urls');
   } else {
-    return errorHandling(
+    return helpers.errorHandling(
       res,
       req,
       users,
@@ -129,10 +119,10 @@ app.delete('/logout/', (req, res) => {
 //POST route to register new user
 app.put('/register/', (req, res) => {
   if (
-    checkEmail(users, req.body['email']) === false &&
+    helpers.checkEmail(users, req.body['email']) === false &&
     req.body.password.length > 3
   ) {
-    const userId = generateRandomString();
+    const userId = helpers.generateRandomString();
     const password = req.body.password;
     const hashedPassword = bcrypt.hashSync(password, 10);
     users[userId] = {
@@ -140,15 +130,15 @@ app.put('/register/', (req, res) => {
       email: req.body.email,
       password: hashedPassword,
     };
-    users = updateJSON(users, usersPath);
+    users = helpers.updateJson(users, usersPath);
     const templateVars = {
-      urls: urlsForUser(urlDatabase, userId),
+      urls: helpers.urlsForUser(urlDatabase, userId),
       userId: users[userId],
     };
     req.session.user_id = userId;
     return res.render('urls_new', templateVars);
   } else {
-    errorHandling(res, req, users, `Error: User is already registered`);
+    helpers.errorHandling(res, req, users, `Error: User is already registered`);
   }
 });
 
@@ -196,51 +186,51 @@ app.get('/urls', (req, res) => {
     return res.redirect('/login');
   }
   const templateVars = {
-    urls: urlsForUser(urlDatabase, req.session.user_id),
+    urls: helpers.urlsForUser(urlDatabase, req.session.user_id),
     userId: users[req.session.user_id],
   };
   res.render('urls_index', templateVars);
 });
 
-app.get('/urls/:shortURL', (req, res) => {
-  const URL = req.params.shortURL;
-  if (!urlDatabase[req.params.shortURL]) {
-    errorHandling(res, req, users, `404 Error: ShortURL Not Found`);
+app.get('/urls/:shortUrl', (req, res) => {
+  const url = req.params.shortUrl;
+  if (!urlDatabase[req.params.shortUrl]) {
+    helpers.errorHandling(res, req, users, `404 Error: ShortURL Not Found`);
   } else if (!req.session.user_id) {
     return res.redirect('/login');
-  } else if (req.session.user_id !== urlDatabase[URL].userID) {
-    errorHandling(
+  } else if (req.session.user_id !== urlDatabase[url].userId) {
+    helpers.errorHandling(
       res,
       req,
       users,
       `403 Error: You do not have access to this URL`
     );
-  } else if (req.session.user_id === urlDatabase[URL].userID) {
+  } else if (req.session.user_id === urlDatabase[url].userId) {
     const templateVars = {
-      shortURL: URL,
-      longURL: urlDatabase[URL].longURL,
+      shortUrl: url,
+      longUrl: urlDatabase[url].longUrl,
       userId: users[req.session.user_id],
-      visits: urlDatabase[URL].tracker.visits,
-      unique: urlDatabase[URL].tracker.uniqueVisitors.length,
-      visitorLogs: urlDatabase[URL].tracker.visitorLog,
+      visits: urlDatabase[url].tracker.visits,
+      unique: urlDatabase[url].tracker.uniqueVisitors.length,
+      visitorLogs: urlDatabase[url].tracker.visitorLog,
     };
     res.render('urls_show', templateVars);
   }
 });
 
 //short /u/shortURL route handler
-app.get('/u/:shortURL', (req, res) => {
-  const URL = req.params.shortURL;
-  if (urlDatabase[URL] !== undefined) {
+app.get('/u/:shortUrl', (req, res) => {
+  const url = req.params.shortUrl;
+  if (urlDatabase[url] !== undefined) {
     req.session.userIP = req.ip;
     //call tracking function helpers
-    setIpCookie(urlDatabase, req.ip, urlDatabasePath, URL);
-    visitorLog(urlDatabase, URL, req.ip);
-    trackVisits(URL, urlDatabase, urlDatabasePath);
-    const longURL = urlDatabase[URL].longURL;
-    res.redirect(longURL);
+    helpers.setIpCookie(urlDatabase, req.ip, urlDatabasePath, url);
+    helpers.visitorLog(urlDatabase, url, req.ip);
+    helpers.trackVisits(url, urlDatabase, urlDatabasePath);
+    const longUrl = urlDatabase[url].longUrl;
+    res.redirect(longUrl);
   } else {
-    errorHandling(res, req, users, `404 Error: ShortURL Not Found`);
+    helpers.errorHandling(res, req, users, `404 Error: ShortURL Not Found`);
   }
 });
 

@@ -16,17 +16,17 @@
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <h6 class="card-title">Original URL: <a href="/u/<%= shortURL %>"><%= longURL %></a></h6>
+        <h6 class="card-title">Original URL: <a href="/u/<%= shortUrl %>"><%= longUrl %></a></h6>
         <p class="card-text">
-          <h2>Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></h2>
+          <h2>Short URL: <a href="/u/<%= shortUrl %>"><%= shortUrl %></a></h2>
         </p>
-        <label for="longURL"><h5>Update URL:</h5></label>
-        <form method="POST" action="/urls/<%= shortURL %>/?_method=PUT">
+        <label for="longUrl"><h5>Update URL:</h5></label>
+        <form method="POST" action="/urls/<%= shortUrl %>/?_method=PUT">
           <input
             class="text-center"
             type="url"
             required
-            name="longURL"
+            name="longUrl"
             value="http://www."
             style="width: 300px; margin: 1em"
           />

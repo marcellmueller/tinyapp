@@ -30,47 +30,47 @@ const getUserId = (users, email) => {
 };
 
 //tracks page visits
-const trackVisits = (URL, urlDatabase, urlDatabasePath) => {
-  urlDatabase[URL].tracker.visits++;
-  urlDatabase = updateJSON(urlDatabase, urlDatabasePath);
+const trackVisits = (url, urlDatabase, urlDatabasePath) => {
+  urlDatabase[url].tracker.visits++;
+  urlDatabase = updateJson(urlDatabase, urlDatabasePath);
 };
 
 //see if user IP exists in list
-const searchIP = (data, URL, IP) => {
-  const ipList = data[URL].tracker.uniqueVisitors;
-  for (const each in ipList) {
-    if (IP === ipList[each]) {
+const searchIp = (data, url, ip) => {
+  const ipList = data[url].tracker.uniqueVisitors;
+  for (const ips in ipList) {
+    if (ip === ipList[ips]) {
       return true;
     }
   }
   return false;
 };
 
-const visitorLog = (data, URL, IP) => {
+const visitorLog = (data, url, ip) => {
   let now = new Date();
-  const visitorLog = data[URL].tracker.visitorLog;
-  visitorLog.push({ Date: now, IP: IP });
+  const visitorLog = data[url].tracker.visitorLog;
+  visitorLog.push({ date: now, ip: ip });
 };
 
-const setIpCookie = (data, IP, path, URL) => {
-  if (searchIP(data, URL, IP) === false) {
-    data[URL].tracker.uniqueVisitors.push(IP);
-    updateJSON(data, path);
+const setIpCookie = (data, ip, path, url) => {
+  if (searchIp(data, url, ip) === false) {
+    data[url].tracker.uniqueVisitors.push(ip);
+    updateJson(data, path);
   }
 };
 
 //get users URLs and return object for display
 const urlsForUser = (urlDatabase, userId) => {
-  const userURLs = {};
-  for (const each in urlDatabase) {
-    if (urlDatabase[each].userID === userId) {
-      userURLs[each] = urlDatabase[each];
+  const userUrls = {};
+  for (const url in urlDatabase) {
+    if (urlDatabase[url].userId === userId) {
+      userUrls[url] = urlDatabase[url];
     }
   }
-  return userURLs;
+  return userUrls;
 };
 
-const saveJSON = (data, path) => {
+const saveJson = (data, path) => {
   try {
     fs.writeFileSync(path, JSON.stringify(data));
   } catch (err) {
@@ -78,7 +78,7 @@ const saveJSON = (data, path) => {
   }
 };
 
-const readJSON = (path) => {
+const readJson = (path) => {
   try {
     const data = fs.readFileSync(path, 'utf8');
     return JSON.parse(data);
@@ -89,9 +89,9 @@ const readJSON = (path) => {
 };
 
 //used to save JSON and update the object in express_server
-const updateJSON = (data, path) => {
-  saveJSON(data, path);
-  return readJSON(path);
+const updateJson = (data, path) => {
+  saveJson(data, path);
+  return readJson(path);
 };
 
 ///generateRandomString and helper functions below
@@ -109,11 +109,7 @@ const generateRandomString = () => {
 const generateRandomChar = () => {
   const chars =
     '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  return chars[random(chars.length)];
-};
-
-const random = (max) => {
-  return Math.floor(Math.random() * max);
+  return chars[Math.floor(Math.random() * chars.length)];
 };
 
 module.exports = {
@@ -121,11 +117,11 @@ module.exports = {
   checkEmail,
   urlsForUser,
   generateRandomString,
-  saveJSON,
-  readJSON,
-  updateJSON,
+  saveJson,
+  readJson,
+  updateJson,
   trackVisits,
-  searchIP,
+  searchIp,
   setIpCookie,
   visitorLog,
   errorHandling,
